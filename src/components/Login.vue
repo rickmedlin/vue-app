@@ -5,9 +5,10 @@
             <div class="col">
                 <h1 class="mt-5">Login</h1>
                 <hr>
-                <form method="post" action="/login" class="needs-validation" novalidate>
+                <form-tag @loginevent="submitHandler" name="newForm" event="loginevent">
 
                     <text-input
+                        v-model="email"
                         label="Email"
                         type="email"
                         name="email"
@@ -15,6 +16,7 @@
                     </text-input>
 
                     <text-input
+                        v-model="password"
                         label="Password"
                         type="password"
                         name="password"
@@ -23,39 +25,31 @@
 
                     <hr>
                     <input type="submit" class="btn btn-primary" value="Login">
-                </form>
+                </form-tag>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import FormTag from './forms/FormTag.vue'
 import TextInput from './forms/TextInput.vue'
 export default {
     name: 'LoginInput',
     components: {
+        FormTag,
         TextInput,
     },
-    mounted() {
-        (function () {
-            'use strict'
-
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            var forms = document.querySelectorAll('.needs-validation')
-
-            // Loop over them and prevent submission
-            Array.prototype.slice.call(forms)
-                .forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                    }
-
-                    form.classList.add('was-validated')
-                }, false)
-                })
-            })()
+    data() {
+        return {
+            email: "",
+            password: "",
+        }
+    },
+    methods: {
+        submitHandler() {
+            console.log("submitHander called - success")
+        }
     }
 }
 </script>

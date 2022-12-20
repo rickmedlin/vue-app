@@ -16,6 +16,9 @@
                         required="true">
                     </text-input>
 
+                    <hr />
+                    Email: {{ email }}
+
                     <text-input
                         v-model="password"
                         label="Password"
@@ -67,7 +70,7 @@ export default {
                 if (data.error) {
                     console.log("Error:", data.message);
                 } else {
-                    console.log(data);
+                    console.log("Token:", data.data.token.token);
                 }
             })
         }

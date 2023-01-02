@@ -8,3 +8,13 @@
         </div>
     </div>
 </template>
+
+<script>
+import Security from './security.js'
+
+export default {
+    beforeMount() {
+        Security.requireToken();
+    }
+}
+</script>

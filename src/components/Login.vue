@@ -8,7 +8,7 @@
                 <hr>
                 <form-tag @loginevent="submitHandler" name="newForm" event="loginevent">
 
-                    <text-input
+                    <text-input class="w-50"
                         v-model="email"
                         label="Email"
                         type="email"
@@ -16,7 +16,7 @@
                         required="true">
                     </text-input>
 
-                    <text-input
+                    <text-input class="w-50"
                         v-model="password"
                         label="Password"
                         type="password"

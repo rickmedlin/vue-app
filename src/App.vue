@@ -1,7 +1,7 @@
 <template>
   <Header />
   <div>
-    <router-view/>
+    <router-view @success="success" @error="error" @warning="warning"/>
   </div>
   <Footer />
 </template>
@@ -10,6 +10,7 @@
 import Header from "./components/Header.vue"
 import Footer from "./components/Footer.vue"
 import { store } from './components/store.js'
+import notie from 'notie'
 
 const getCookie = (name) => {
   return document.cookie.split("; ").reduce((r, v) => {
@@ -46,26 +47,25 @@ export default {
       }
     }
   },
-  mounted() {
-    const payload = {
-      foo: "bar",
+  methods: {
+    success(msg) {
+      notie.alert({
+        type: 'success',
+        text: msg,
+      })
+    },
+    error(msg) {
+      notie.alert({
+        type: 'error',
+        text: msg,
+      })
+    },
+    warning(msg) {
+      notie.alert({
+        type: 'warning',
+        text: msg,
+      })
     }
-
-    // const headers = new Headers();
-    // headers.append("Content-Type", "application/json");
-    // headers.append("Authorization", "Bearer " + store.token);
-
-    const requestOptions = {
-      method: "POST",
-      body: JSON.stringify(payload),
-      // headers: headers,
-    }
-
-    fetch("http://localhost:8081/admin/foo", requestOptions)
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-    })
   }
 }
 </script>

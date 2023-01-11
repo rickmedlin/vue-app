@@ -77,6 +77,7 @@ import FormTag from './forms/FormTag.vue'
 import TextInput from './forms/TextInput.vue'
 import notie from 'notie'
 import {store} from './store'
+import router from './../router/index.js'
 
 export default {
     beforeMount() {
@@ -88,10 +89,7 @@ export default {
             .then((response) => response.json())
             .then((data) => {
                 if (data.error) {
-                    notie.alert({
-                        type: 'error',
-                        text: data.message,
-                    })
+                    this.$emit('error',  data.message)
                 } else {
                     this.user = data;
                     // password should be empty for existing user.
@@ -130,25 +128,39 @@ export default {
             .then((response) => response.json())
             .then((data) => {
                 if (data.error) {
-                    notie.alert({
-                        type: 'error',
-                        text: data.message
-                    })
+                    this.$emit('error',  data.message)
                 } else {
-                    notie.alert({
-                        type: 'success',
-                        text: 'Changes saved.',
-                    })
+                    this.$emit('success',  'Changes saved')
+                    router.push("/admin/users");
                 }
             })
             .catch((error) =>{
-                notie.alert({
-                    type: 'error',
-                    text: error,
-                })
+                this.$emit('error',  error)
             })
         },
-        confirmDelete() {
+        confirmDelete(id) {
+            notie.confirm({
+                text: "Are you sure you want to delete this user?",
+                submitText: "Delete",
+                submitCallback: function() {
+                    console.log("will delete", id)
+
+                    let payload = {
+                        id: id,
+                    }
+
+                    fetch(process.env.VUE_APP_API_URL + "/admin/users/delete", Security.requestOptions(payload))
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.error) {
+                            this.$emit('error',  data.message)
+                        } else {
+                            this.$emit('success',  'User deleted');
+                            router.push("/admin/users")
+                        }
+                    })
+                }
+            })
         }
     }
 }

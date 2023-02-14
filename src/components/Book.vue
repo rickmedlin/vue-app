@@ -9,11 +9,11 @@
                 <template v-if="this.ready">
                     <h3 class="mt-3">{{book.title}}</h3><hr>
                     <p>
-                        <strong>Author:</strong>{{book.author.author_name}}<br>
-                        <strong>Published:</strong>{{book.publication_year}}<br>
+                        <strong>Author:</strong> {{book.author.author_name}}<br>
+                        <strong>Published:</strong> {{book.publication_year}}
                     </p>
                     <p>
-                        {{book.description}}
+                        {{ book.description }}
                     </p>
                 </template>
                 <p v-else>Loading...</p>
@@ -23,7 +23,6 @@
 </template>
 
 <script>
-
 export default {
     data() {
         return {
@@ -37,18 +36,16 @@ export default {
             .then((response) => response.json())
             .then((data) => {
                 if (data.error) {
-                    this.$emit('error', data.message);
+                    this.$emit('error', data.message)
                 } else {
                     this.book = data.data;
                     this.ready = true;
+                    console.log("Title is", this.book.title);
                 }
-            })
-            .catch(error => {
-                this.$emit('error', error)
             })
     },
     deactivated() {
-
+        this.ready = false;
     }
 }
 </script>

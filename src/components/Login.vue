@@ -41,7 +41,8 @@ import notie from 'notie'
 import Security from './security.js'
 
 export default {
-    name: 'LoginInput',
+    // eslint-disable-next-line vue/multi-word-component-names
+    name: 'Login',
     components: {
         FormTag,
         TextInput,

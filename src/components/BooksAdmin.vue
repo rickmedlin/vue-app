@@ -1,10 +1,10 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div class="container">
         <div class="row">
             <div class="col">
                 <h1 class="mt-3">Manage Books</h1>
                 <hr>
+
                 <table v-if="this.ready" class="table table-striped table-compact">
                     <thead>
                         <tr>
@@ -30,29 +30,26 @@
 import Security from './security.js'
 
 export default {
-    data () {
+    name: 'BooksAdmin',
+    data() {
         return {
             books: {},
             ready: false,
         }
     },
-    activated () {
+    mounted() {
         Security.requireToken();
 
         fetch(process.env.VUE_APP_API_URL + "/books")
         .then((response) => response.json())
         .then((data) => {
             if (data.error) {
-                this.$emit('error', data.message)
+                this.$emit('error', data.message);
             } else {
-                this.book = data.data.books;
+                this.books = data.data.books;
                 this.ready = true;
             }
         })
-
     },
-    deactivated() {
-        this.ready = false;
-    }
 }
 </script>

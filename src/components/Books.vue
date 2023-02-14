@@ -48,6 +48,8 @@
 import {store} from '@/components/store'
 
 export default {
+    // eslint-disable-next-line vue/multi-word-component-names
+    name: "Books",
     data() {
         return {
             store,

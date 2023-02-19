@@ -1,20 +1,22 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div class="container">
         <div class="row">
             <div class="col">
-                <h1 class="mt-3">Add or Edit a Book</h1>
+                <h1 class="mt-3">Add/Edit Book</h1>
                 <hr>
+
                 <form-tag @bookEditEvent="submitHandler" name="bookForm" event="bookEditEvent">
 
                     <div v-if="this.book.slug !=''" class="mb-3">
                         <img :src="`${this.imgPath}/covers/${this.book.slug}.jpg`" class="img-fluid img-thumbnail book-cover" alt="cover">
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3 w-50">
                         <label for="formFile" class="form-label">Cover Image</label>
-                        <input v-if="this.book.id === 0" ref="coverInput" class="form-control" type="file" id="formFile" required accept="image/jpeg" @change="loadCoverImage">
-                        <input v-else ref="coverInput" class="form-control" type="file" id="formFile" accept="image/jpeg" @change="loadCoverImage">
+                        <input v-if="this.book.id === 0" ref="coverInput" class="form-control" type="file" id="formFile"
+                            required accept="image/jpeg" @change="loadCoverImage">
+                        <input v-else ref="coverInput" class="form-control" type="file" id="formFile"
+                            accept="image/jpeg" @change="loadCoverImage">
                     </div>
 
                     <text-input class="w-50"
@@ -43,12 +45,12 @@
                         name="publication-year">
                     </text-input>
 
-                    <div class="mb-3">
+                    <div class="mb-3 w-50">
                         <label for="description" class="form-label">Description</label>
                         <textarea required v-model="book.description" class="form-control" id="description" rows="3"></textarea>
                     </div>
 
-                    <div>
+                    <div class="mb-3 w-50">
                         <label for="genres" class="form-label">Genres</label>
                         <select ref="genres"
                             id="genres"
@@ -66,13 +68,13 @@
                     <hr>
 
                     <div class="float-start">
-                        <input type="submit" class="btn btn-primary me-2" value="Save"/>
+                        <input type="submit" class="btn btn-primary me-2" value="Save" />
                         <router-link to="/admin/books" class="btn btn-outline-secondary">Cancel</router-link>
                     </div>
-
                     <div class="float-end">
-                        <a v-if="this.books.id > 0"
-                            class="btn btn-danger" href="javascript:void(0);" @click="confirmDelete(this.book.id)">Delete
+                        <a v-if="this.book.id > 0"
+                            class="btn btn-danger" href="javascript:void(0);" @click="confirmDelete(this.book.id)">
+                            Delete
                         </a>
                     </div>
 
@@ -87,12 +89,33 @@ import Security from './security.js'
 import FormTag from '@/components/forms/FormTag'
 import TextInput from '@/components/forms/TextInput'
 import SelectInput from '@/components/forms/SelectInput'
-// import notie from 'notie'
+import router from '@/router'
+import notie from 'notie'
 
 export default {
     name: "BookEdit",
     beforeMount() {
         Security.requireToken();
+
+        // get book for edit if id > 0
+        if (this.$route.params.bookId > 0) {
+            // editing a book
+        } else {
+            // adding a book
+
+        }
+
+        // get list of authors for drop down
+        fetch(process.env.VUE_APP_API_URL + "/admin/authors/all", Security.requestOptions(""))
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    this.$emit('error', data.message)
+                } else {
+                    this.authors = data.data;
+                }
+            })
+
     },
     components: {
         'form-tag': FormTag,
@@ -108,8 +131,9 @@ export default {
                 publication_year: 0,
                 description: "",
                 cover: "",
+                slug: "",
                 genres: [],
-                genre_ids: []
+                genre_ids: [],
             },
             authors: [],
             imgPath: process.env.VUE_APP_IMAGE_URL,
@@ -126,13 +150,68 @@ export default {
     },
     methods: {
         submitHandler() {
+            const payload = {
+                id: this.book.id,
+                title: this.book.title,
+                author_id: parseInt(this.book.author_id, 10),
+                publication_year: this.book.publication_year,
+                description: this.book.description,
+                cover: this.book.cover,
+                slug: this.book.slug,
+                genre_ids: this.book.genre_ids,
+            }
 
+            fetch(`${process.env.VUE_APP_API_URL}/admin/books/save`, Security.requestOptions(payload))
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    this.$emit('error', data.message)
+                } else {
+                    this.$emit('success', "Changes saved")
+                    router.push("/admin/books")
+                }
+            })
+            .catch((error) =>{
+                this.$emit('error', error)
+            })
         },
         loadCoverImage() {
+            // get reference to image input
+            const file = this.$refs.coverInput.files[0];
+
+            // encode file with FileReader API
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result
+                .replace("data:", "")
+                .replace(/^,+,/, "")
+            this.book.cover = base64String;
+            // alert(base64String);
+            }
+            reader.readAsDataURL(file)
 
         },
         confirmDelete(id) {
-            console.log(id);
+            notie.confirm({
+                text: "Deleted this book?",
+                submitText: "Delete",
+                submitCallback: () => {
+                    let payload = {
+                        id: id,
+                    }
+
+                    fetch(process.env.VUE_APP_API_URL + "/admin/books/delete", Security.requestOptions(payload))
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.error) {
+                                this.$emit('error', data.message)
+                            } else {
+                                this.$emit('success', "Book deleted")
+                                router.push("/admin/books")
+                            }
+                        })
+                }
+            })
         }
     }
 }

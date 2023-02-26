@@ -161,21 +161,21 @@ export default {
                 genre_ids: this.book.genre_ids,
             }
 
-            // console.log(payload);
+            console.log(payload);
 
-            fetch(`${process.env.VUE_APP_API_URL}/admin/books/save`, Security.requestOptions(payload))
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.error) {
-                    this.$emit('error', data.message)
-                } else {
-                    this.$emit('success', 'Changes saved');
-                    router.push("/admin/books");
-                }
-            })
-            .catch((error) =>{
-                this.$emit('error', error);
-            })
+            // fetch(`${process.env.VUE_APP_API_URL}/admin/books/save`, Security.requestOptions(payload))
+            // .then((response) => response.json())
+            // .then((data) => {
+            //     if (data.error) {
+            //         this.$emit('error', data.message)
+            //     } else {
+            //         this.$emit('success', 'Changes saved');
+            //         router.push("/admin/books");
+            //     }
+            // })
+            // .catch((error) =>{
+            //     this.$emit('error', error);
+            // })
         },
         loadCoverImage() {
             // get reference to image input

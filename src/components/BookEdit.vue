@@ -185,9 +185,8 @@ export default {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const base64String = reader.result
-                // .replace("data:", "")
-                .replace("data:image/jpeg;base64,", "")
-                .replace(/^,+,/, "")
+                .replace("data:", "")
+                .replace(/^.+,/, "");
             this.book.cover = base64String;
             // alert(base64String);
             }

@@ -8,7 +8,7 @@
             :required="required"
             :multiple="multiple"
             :value="modelValue"
-            @input="$emit('update:modelVlue', $event.target.value)">
+            @input="$emit('update:modelValue', $event.target.value)">
             <option disabled value="">Choose...</option>
             <option v-for="option in items" :value="option.value" :key="option.value">
                 {{option.text}}

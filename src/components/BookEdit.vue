@@ -7,7 +7,7 @@
 
                 <form-tag @bookEditEvent="submitHandler" name="bookForm" event="bookEditEvent">
 
-                    <div v-if="this.book.slug !=''" class="mb-3">
+                    <div v-if="this.book.slug !==''" class="mb-3">
                         <img :src="`${this.imgPath}/covers/${this.book.slug}.jpg`" class="img-fluid img-thumbnail book-cover" alt="cover">
                     </div>
 
@@ -77,6 +77,7 @@
                             Delete
                         </a>
                     </div>
+                    <div class="clearfix"></div>
 
                 </form-tag>
             </div>
@@ -206,7 +207,7 @@ export default {
         },
         confirmDelete(id) {
             notie.confirm({
-                text: "Deleted this book?",
+                text: "Delete this book?",
                 submitText: "Delete",
                 submitCallback: () => {
                     let payload = {

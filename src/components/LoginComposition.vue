@@ -9,7 +9,7 @@
                 <form-tag @loginevent="submitHandler" name="newForm" event="loginevent">
 
                     <text-input class="w-50"
-                        v-model="email"
+                        v-model="mail"
                         label="Email"
                         type="email"
                         name="email"
@@ -33,6 +33,8 @@
 </template>
 
 <script>
+
+import {ref, onMounted} from 'vue'
 import FormTag from './forms/FormTag.vue'
 import TextInput from './forms/TextInput.vue'
 import { store } from './store.js'
@@ -40,32 +42,33 @@ import router from './../router/index.js'
 import Security from './security.js'
 
 export default {
-    // eslint-disable-next-line vue/multi-word-component-names
-    name: 'Login',
+    name: "LoginComposition",
+    props: {},
+    emits: ['error'],
     components: {
-        FormTag,
-        TextInput,
+        'form-tag' : FormTag,
+        'text-input' : TextInput,
     },
-    data() {
-        return {
-            email: "",
-            password: "",
-            store,
-        }
-    },
-    methods: {
-        submitHandler() {
 
+    setup(props, ctx) {
+        let mail = ref("");
+        let password = ref("");
+
+        onMounted(() =>{
+            console.log("Using login composition");
+        })
+
+        function submitHandler() {
             const payload = {
-                email: this.email,
-                password: this.password,
+                email: mail.value,
+                password: password.value,
             }
 
             fetch(process.env.VUE_APP_API_URL + "/users/login", Security.requestOptions(payload))
             .then((response) => response.json())
             .then((response) => {
                 if (response.error) {
-                    this.$emit('error', response.message)
+                    ctx.emit('error', response.message)
                 } else {
                     store.token = response.data.token.token;
 
@@ -93,6 +96,13 @@ export default {
                 }
             })
         }
+
+        return {
+            submitHandler,
+            mail,
+            password
+        }
     }
 }
+
 </script>

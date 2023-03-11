@@ -40,7 +40,6 @@ export default {
                 } else {
                     this.book = data.data;
                     this.ready = true;
-                    console.log("Title is", this.book.title);
                 }
             })
     },

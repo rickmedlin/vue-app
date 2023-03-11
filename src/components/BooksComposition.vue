@@ -1,5 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
+
+    <!-- we must remove all references to this -->
+
     <div class="container">
         <div class="row">
             <div class="col">
@@ -20,12 +23,15 @@
 
             <div>
                 <div class="card-group">
-                    <transition-group class="p-3 d-flex flex-wrap" tak="div" appear name="books">
 
-                        <div v-for="b in this.books" :key="b.id">
-                            <div class="card me-2 ms-1 mb-3" style="width: 10rem;" v-if="b.genre_ids.includes(currentFilter) || currentFilter === 0">
+                    <transition-group class="p-3 d-flex flex-wrap" tag="div" appear name="books">
+
+                        <div v-for="b in books" :key="b.id">
+                            <div class="card me-2 ms-1 mb-3" style="width: 10rem;"
+                                v-if="b.genre_ids.includes(currentFilter) || currentFilter === 0">
                                 <router-link :to="`/books/${b.slug}`">
-                                    <img :src="`${this.imgPath}/covers/${b.slug}.jpg`" class="card-img-top" :alt="`cover for ${b.title}`">
+                                    <img :src="`${imgPath}/covers/${b.slug}.jpg`" class="card-img-top"
+                                        :alt="`cover for ${b.title}`">
                                 </router-link>
                                 <div class="card-body text-center">
                                     <h6 class="card-title">{{b.title}}</h6>
@@ -44,44 +50,56 @@
     </div>
 </template>
 
+
 <script>
-import {store} from '@/components/store'
+import {ref, onMounted} from 'vue'
 
 export default {
-    // eslint-disable-next-line vue/multi-word-component-names
-    name: "Books",
-    data() {
-        return {
-            store,
-            ready: false,
-            imgPath: process.env.VUE_APP_IMAGE_URL,
-            books: {},
-            currentFilter: 0,
-        }
-    },
+    name: 'BooksComposition',
     emits: ['error'],
-    beforeMount() {
-        fetch(process.env.VUE_APP_API_URL + "/books")
+    props: {},
+
+    setup(props, ctx) {
+        // set up state for this component
+        let ready = ref(false);
+        let currentFilter = ref(0);
+        const imgPath = ref(process.env.VUE_APP_IMAGE_URL);
+        let books = ref({})
+
+        // use onMounted lifecycle hook to get books
+        onMounted(() => {
+            console.log("using books with composition api");
+            fetch(process.env.VUE_APP_API_URL + "/books")
             .then((response) => response.json())
             .then((response) => {
                 if (response.error) {
-                    this.$emit('error', response.message);
+                    ctx.emit('error', response.message);
                 } else {
-                    this.books = response.data.books;
-                    this.ready = true;
+                    books.value = response.data.books;
+                    ready.value = true;
                 }
             })
             .catch(error => {
-                this.$emit('error', error)
+                ctx.emit('error', error)
             })
-    },
-    methods: {
-        setFilter: function(filter) {
-            this.currentFilter = filter;
+        })
+
+        function setFilter(filter) {
+            currentFilter.value = filter;
         }
-    },
+
+        // return data and functions
+        return {
+            currentFilter,
+            imgPath,
+            books,
+            setFilter,
+            ready
+        }
+    }
 }
 </script>
+
 
 <style scoped>
 .filters {
@@ -125,5 +143,4 @@ export default {
 .books-enter, .books-leave-to {
     opacity: 0;
 }
-
 </style>
